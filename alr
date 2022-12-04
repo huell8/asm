@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# alr - assembly, link & run!
+
+if [ $# -ne 1 ]; then
+    echo "only one argument can be specified"
+    exit
+fi
+if ! test -f "$1.S"; then
+    echo "$1.S does not exist"
+    exit
+fi
+
+nasm -felf64 $1.S -o $1.o
+ld $1.o -lc --dynamic-linker /lib/ld-linux-x86-64.so.2 -o $1
+./$1
