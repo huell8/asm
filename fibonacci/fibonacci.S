@@ -3,27 +3,38 @@
 
     global _start
 _start:
-    mov rcx, 0
+    mov rcx, 0x10
+    push rbx                    ; save rbx because we use it
+
+    xor rax, rax                ; current number
+    xor rbx, rbx                ; one before
+    inc rax
+
 loop_start:
+    push rax                    ; save rax and rcx since they get messed up by printf
     push rcx
-    mov rsi, rcx
-    call print_int
-    pop rcx
 
-    inc rcx
-    cmp rcx, 10                 ; loop rxc from 0 to 9
-    jl loop_start
+    ;; call printf("%d\n", rax)
+    mov rdi, format
+    mov rsi, rax
+    xor rax, rax
+    call printf
 
+    pop rcx                     ; resotore pre-printf register state
+    pop rax
+
+    mov rdx, rbx                ; calculate next fib num
+    mov rbx, rax
+    add rax, rdx
+
+    dec rcx
+    jnz loop_start              ; jump if zero flag set from dec r11
+
+    ;; return 0
+    pop rbx                     ; recover rbx state
     mov rax, 0x3c
     xor rdi, rdi
     syscall
 
-print_int:
-    ;; print the contents of rsi
-    mov rdi, fmt
-    xor rax, rax
-    call printf
-    ret
-
     section .data
-fmt:    db "%i", 10
+format:    db "%d", 10, 0
