@@ -1,13 +1,13 @@
 	section .text
 	global _start
 _start:
-	mov rdi, 0xffffffff
+	mov rdi, 0xffffffff		; print 2^32-1
 	call print_dec
 
 	mov rax, 0x3c			; sys_exit
 	xor rdi, rdi			; return 0
 	syscall
-	
+
 print_dec:					; print rdi as unsigned decimal int to stdout
 	push rbp				; save bcs we use it
 	mov rbp, rsp			; set base pointer
@@ -22,7 +22,7 @@ p_d_loop:
 	dec rsp
 	cmp rax, 0				; divide by 10 untill ratio > 0
 	jg p_d_loop
-	
+
 	mov rax, 1				; sys_write
 	mov rdi, 1				; stdout
 	lea rsi, [rsp+1]		; rsp+1 -> first meaningful character
